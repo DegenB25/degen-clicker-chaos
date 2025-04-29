@@ -1,0 +1,22 @@
+
+.click-button {
+  background-color: #ea384c;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 200px;
+  height: 200px;
+  font-size: 1.5rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: transform 0.1s;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.click-button:hover {
+  background-color: #d02c3f;
+}
+
+.click-button:active {
+  transform: scale(0.95);
+}

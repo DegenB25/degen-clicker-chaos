@@ -1,0 +1,11 @@
+
+.beta-banner {
+  background-color: #f8d7da;
+  color: #721c24;
+  padding: 0.5rem;
+  text-align: center;
+  font-weight: bold;
+  border-bottom: 1px solid #f5c6cb;
+  width: 100%;
+  z-index: 10;
+}
