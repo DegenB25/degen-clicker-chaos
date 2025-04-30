@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import NavBar from './components/NavBar';
 import BetaBanner from './components/BetaBanner';
 import ClickButton from './components/ClickButton';
-import { playSound, SOUNDS } from './utils/audioUtils';
+import { playSoundWithFallback, SOUNDS } from './utils/audioUtils';
 import './App.css';
 
 function App() {
@@ -18,7 +18,7 @@ function App() {
   // Handle page change sound
   const handlePageChange = (newPage: string) => {
     if (newPage !== page) {
-      playSound(SOUNDS.PAGE_CHANGE, 0.3);
+      playSoundWithFallback(SOUNDS.PAGE_CHANGE, SOUNDS.PAGE_CHANGE_FALLBACK, 0.3);
       setPage(newPage);
     }
   };
@@ -27,7 +27,7 @@ function App() {
   useEffect(() => {
     const currentTokens = Math.floor(count / 10);
     if (currentTokens > previousTokens) {
-      playSound(SOUNDS.TOKEN_EARN, 0.4);
+      playSoundWithFallback(SOUNDS.TOKEN_EARN, SOUNDS.TOKEN_EARN_FALLBACK, 0.4);
       setPreviousTokens(currentTokens);
     }
   }, [count, previousTokens]);
