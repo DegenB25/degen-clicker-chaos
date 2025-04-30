@@ -2,6 +2,8 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import { execSync } from 'child_process'
+import { resolve } from 'path'
+import fs from 'fs'
 
 // Check if we're in a build context
 const isBuild = process.argv.includes('build')
@@ -32,6 +34,44 @@ if (!process.env.npm_lifecycle_event) {
   }
 }
 
+// Create a direct executable script for development and building
+const scriptPath = resolve(process.cwd(), 'build.js')
+if (!fs.existsSync(scriptPath)) {
+  try {
+    const scriptContent = `
+// This file is a workaround for missing npm scripts
+const { execSync } = require('child_process');
+const args = process.argv.slice(2);
+
+console.log('Running build script with args:', args);
+
+try {
+  if (args[0] === 'dev') {
+    console.log('Starting development server...');
+    execSync('npx vite', { stdio: 'inherit' });
+  } else if (args[0] === 'build:dev') {
+    console.log('Building for development...');
+    execSync('npx vite build --mode development', { stdio: 'inherit' });
+  } else if (args[0] === 'build') {
+    console.log('Building for production...');
+    execSync('npx vite build', { stdio: 'inherit' });
+  } else {
+    console.log('Unknown command. Available commands: dev, build, build:dev');
+    process.exit(1);
+  }
+} catch (error) {
+  console.error('Build script error:', error);
+  process.exit(1);
+}
+`;
+    fs.writeFileSync(scriptPath, scriptContent, 'utf-8');
+    console.log('Created build.js script for direct execution');
+    fs.chmodSync(scriptPath, '755'); // Make executable
+  } catch (error) {
+    console.error('Error creating build script:', error);
+  }
+}
+
 export default defineConfig({
   plugins: [
     react(),
@@ -40,6 +80,12 @@ export default defineConfig({
       config(config, { command }) {
         console.log(`Vite command: ${command}, npm_lifecycle_event: ${process.env.npm_lifecycle_event}`)
         return config
+      },
+      buildStart() {
+        console.log('Build starting with configuration:', { 
+          mode: process.env.NODE_ENV,
+          command: process.env.npm_lifecycle_event 
+        })
       }
     }
   ],
