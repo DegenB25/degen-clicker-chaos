@@ -1,17 +1,36 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import NavBar from './components/NavBar';
 import BetaBanner from './components/BetaBanner';
 import ClickButton from './components/ClickButton';
+import { playSound, SOUNDS } from './utils/audioUtils';
 import './App.css';
 
 function App() {
   const [count, setCount] = useState(0);
   const [page, setPage] = useState('home');
+  const [previousTokens, setPreviousTokens] = useState(0);
 
   const handleClick = () => {
     setCount(prevCount => prevCount + 1);
   };
+
+  // Handle page change sound
+  const handlePageChange = (newPage: string) => {
+    if (newPage !== page) {
+      playSound(SOUNDS.PAGE_CHANGE, 0.3);
+      setPage(newPage);
+    }
+  };
+
+  // Check if tokens increased and play sound
+  useEffect(() => {
+    const currentTokens = Math.floor(count / 10);
+    if (currentTokens > previousTokens) {
+      playSound(SOUNDS.TOKEN_EARN, 0.4);
+      setPreviousTokens(currentTokens);
+    }
+  }, [count, previousTokens]);
 
   const renderPage = () => {
     switch (page) {
@@ -46,7 +65,7 @@ function App() {
 
   return (
     <div className="app">
-      <NavBar currentPage={page} setPage={setPage} />
+      <NavBar currentPage={page} setPage={handlePageChange} />
       <BetaBanner />
       <main className="content">
         {renderPage()}
